@@ -13,19 +13,33 @@ addLayer("stat", {
     update() {
         player.stat.points = new Decimal(player.stat.achievements.length)
     },
-    tabFormat: [
-        "main-display",
-        ["row", 
-         [
-             ["display-text", () => {return "Hold Shift on Achievement Tooltips to See Requirements, Toggle to Force"}], "blank", ["toggle", ["stat", "holdShift"]]
-         ]
-        ],
-        "blank",
-        "clickables",
-        "blank",
-        "achievements",
-        "blank",
-    ],
+    tabFormat: {
+        "Achievements": {
+            content: [
+                "main-display",
+                ["row", 
+                 [
+                    ["display-text", () => {return "Hold Shift on Achievement Tooltips to See Requirements, Toggle to Force"}], "blank", ["toggle", ["stat", "holdShift"]]
+                 ]
+                ],
+                "blank",
+                "achievements",
+                "blank",
+            ],
+        },
+        "Controls": {
+            content: [
+                "main-display",
+                ["row", 
+                 [
+                    ["display-text", () => {return "Hold Shift on Achievement Tooltips to See Requirements, Toggle to Force"}], "blank", ["toggle", ["stat", "holdShift"]]
+                 ]
+                ],
+                "blank",
+                "clickables",
+            ],
+        },
+    },
     row: "side", // Row the layer is in on the tree (0 is the first row)
     layerShown(){return true},
     clickables: {
@@ -35,7 +49,7 @@ addLayer("stat", {
             onClick() {
                 player.p.upgrades = []
             },
-            unlocked() {return hasUpgrade('g', 24)},
+            unlocked() {return tmp.g.layerShown},
         },
         12: {
             title: "Buy Plant Upgrades",
@@ -43,7 +57,39 @@ addLayer("stat", {
             onHold() {
                 autobuyUpgrades('p')
             },
-            unlocked() {return hasUpgrade('g', 24)},
+            unlocked() {return tmp.p.layerShown},
+        },
+        13: {
+            title: "Do Plant Reset",
+            canClick: true,
+            onClick() {
+                doReset('p', true)
+            },
+            unlocked() {return tmp.p.layerShown},
+        },
+        21: {
+            title: "Reset Garden Upgrades",
+            canClick: true,
+            onClick() {
+                player.g.upgrades = []
+            },
+            unlocked() {return false},
+        },
+        22: {
+            title: "Buy Garden Upgrades",
+            canClick: true,
+            onHold() {
+                autobuyUpgrades('g')
+            },
+            unlocked() {return tmp.g.layerShown},
+        },
+        23: {
+            title: "Do Garden Reset",
+            canClick: true,
+            onClick() {
+                doReset('g', true)
+            },
+            unlocked() {return tmp.g.layerShown},
         },
     },
     achievements: {
@@ -487,7 +533,7 @@ addLayer("g", {
         },
         24: {
             title: "Decking III",
-            description: "Multiply Point Gain Based on Plant Upgrades, Unlock 4 More and Unlock The Ability to Reset or Auto-Buy Your Plant Upgrades",
+            description: "Multiply Point Gain Based on Plant Upgrades and Unlock 4 More",
             cost: (new Decimal(29)),
             effect() {return new Decimal(player.p.upgrades.length).max(0).pow_base(2)},
             effectDisplay() {return "×"+format(this.effect())},
