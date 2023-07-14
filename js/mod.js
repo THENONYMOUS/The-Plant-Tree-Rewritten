@@ -1,28 +1,30 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "The Plant Tree: Rewritten",
+	id: "omgits-theplanttreerewritten-thenonymous4074031767",
+	author: "Thenonymous",
+	pointsName: "plant points",
 	modFiles: ["layers.js", "tree.js"],
 
-	discordName: "",
-	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	discordName: "The Plant Tree on TMT Discord",
+	discordLink: "https://discord.com/channels/762036407719428096/1106927101300453467",
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "1",
+	name: "Plants & Gardens",
 }
 
-let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+let changelog = `<h1>Version History:</h1><br>
+	<h3>v1</h3><br>
+		- Added Plants.<br>
+            - 12 Upgrades, 2 Buyables, 3 Milestones.<br>
+		- Added Gardens.<br>
+            - 8 Upgrades, 4 Milestones.<br>`
 
-let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
+let winText = `Congratulations! You have reached the end and beaten this game, but for now you can wait for future updates!<br>You can also play the original here: <a class="link" href="https://thenonymous.github.io/The-Random-Tree/" target="_blank" v-bind:style="{'font-size': '10px'}">The Plant Tree</a><br>`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -43,6 +45,20 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+    gain = gain.add(smartUpgradeEffect('p', 21, 0))
+    gain = gain.add(smartUpgradeEffect('g', 11, 0))
+    gain = gain.times(smartMilestoneEffect('p', 0))
+    gain = gain.times(smartMilestoneEffect('g', 0))
+    gain = gain.times(smartMilestoneEffect('p', 2))
+    gain = gain.times(smartUpgradeEffect('p', 14))
+    gain = gain.times(smartUpgradeEffect('p', 23))
+    gain = gain.times(smartUpgradeEffect('p', 24))
+    gain = gain.times(smartUpgradeEffect('g', 13))
+    gain = gain.times(smartUpgradeEffect('g', 21))
+    gain = gain.times(smartUpgradeEffect('g', 24))
+    gain = gain.times(smartAchievementEffect('stat', 14))
+    gain = gain.times(buyableEffect('p', 12))
+    gain = gain.mul(smartUpgradeEffect('p', 31))
 	return gain
 }
 
@@ -52,11 +68,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+    function() {return hasUpgrade('g', 24) ? "Endgame: 1,000 Plants" : undefined},
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.p.points.gte(1000)
 }
 
 
