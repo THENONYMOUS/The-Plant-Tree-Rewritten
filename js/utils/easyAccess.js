@@ -1,5 +1,5 @@
 function hasUpgrade(layer, id) {
-	return ((player[layer].upgrades.includes(toNumber(id)) || player[layer].upgrades.includes(id.toString())) && !tmp[layer].deactivated)
+	return ((player[layer].upgrades.includes(toNumber(id)) || player[layer].upgrades.includes(id.toString())) && !tmp[layer].deactivated && !tmp[layer].upgrades[id].disabled)
 } // Returns whether or not you have a specified upgrade
 
 function hasMilestone(layer, id) {
@@ -152,10 +152,42 @@ function inCompletion(layer, id, completion) {
     return inChallenge(layer, id) && challengeCompletions(layer, id) == completion
 }
 
+/*
+Challenges Explained with 'This':
+
+Useful Functions;
+    thisCompletionDecimal
+    thisChallengeDescriptionArray - The Description for this Challenge, Based on an Array
+    thisChallengeRequirement - Automated Requirement for this Challenge
+    challengeCanComplete(layer, id) - Automated 'canComplete' for a Challenge
+    challengeGoalDescription(layer, id) - Automated 'goalDescription' for a challenge
+    
+Required;
+    baseAmount: returns the amount of the resource the challenge is based on
+    requirementArray: an array of requirements for the challenge, on for each completion
+    baseName: name of the resource the challenge is based on
+    challengeDescriptionArray: an array of challenge descriptions, one for each completion
+*/
+function autoChallengeFeatures(challenge) {
+    return {
+        requirement() {return thisChallengeRequirement(challenge)},
+        goalDescription() {return challengeGoalDescription(challenge.layer, challenge.id)},
+        canComplete() {return challengeCanComplete(challenge.layer, challenge.id)},
+    }
+}
+
 function smartAchievementEffect(layer, id, def = new Decimal(1)) {
     return (hasAchievement(layer, id) ? achievementEffect(layer, id) : def)
 }
 
 function xor(a, b) {
     return a ? !b : b
+}
+
+function d(num) {
+    return new Decimal(num)
+}
+
+function mag(num, base = d(10)) {
+    return num.max(0).add(1).log(base).floor()
 }
