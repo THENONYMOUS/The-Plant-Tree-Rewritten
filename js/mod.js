@@ -72,6 +72,8 @@ function getPointGen() {
     gain = gain.times(buyableEffect('g', 12))
         // Zones
     gain = gain.times(tmp.z.effect)
+    // Balancing Boosts
+    if(completionDecimal('z', 21).gte(3) && player.z.points.lt(4)) gain = gain.times(10)
     // Nerfs
     let effect = d(player.p.upgrades.length).max(0).add(1).root(10)
     if(inChallenge('z', 21)) effect = effect.pow(15).pow_base(15)
