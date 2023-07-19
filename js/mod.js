@@ -13,13 +13,19 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.1",
-	name: "Plants & Gardens (Rewrite lol)",
+	num: "2",
+	name: "Zones",
 }
 
 let changelog = `<h1>Version History:</h1><br>
+    <h3>v2</h3><br>
+        - Added Zones.<br>
+            - 4 Milestones, 4 Challenges.<br>
+        - Added Content to Plants and Gardens.<br>
+            - Plants: 4 Upgrades, 1 Buyable.<br>
+            - Gardens: 4 Upgrades, 3 Buyables.<br>
     <h3>v1.1</h3><br>
-        - Rewrote Game lol
+        - Rewrote Game lol.<br>
 	<h3>v1</h3><br>
 		- Added Plants.<br>
             - 12 Upgrades, 2 Buyables, 1 Milestone.<br>
@@ -55,13 +61,24 @@ function getPointGen() {
     gain = gain.times(smartUpgradeEffect('p', 23))
     gain = gain.times(smartUpgradeEffect('p', 24))
     gain = gain.times(smartUpgradeEffect('p', 31))
+    gain = gain.times(smartUpgradeEffect('p', 42))
+    gain = gain.times(smartUpgradeEffect('p', 43))
     gain = gain.times(buyableEffect('p', 11))
         // Gardens
     gain = gain.times(smartUpgradeEffect('g', 11))
     gain = gain.times(smartUpgradeEffect('g', 23))
+    gain = gain.times(smartUpgradeEffect('g', 33))
+    gain = gain.times(buyableEffect('g', 11))
+    gain = gain.times(buyableEffect('g', 12))
+        // Zones
+    gain = gain.times(tmp.z.effect)
     // Nerfs
-    gain = gain.div(d(player.p.upgrades.length).max(0).add(1).root(10))
+    let effect = d(player.p.upgrades.length).max(0).add(1).root(10)
+    if(inChallenge('z', 21)) effect = effect.pow(15).pow_base(15)
+    gain = gain.div(effect)
     // Challenges
+    let eaterEffect = player.p.eaters.add(1).root(2).times(player.p.eaters.add(2).log(2))
+    if(inChallenge('z', 22)) gain = gain.root(2).div(eaterEffect)
     // Softcaps
 	return gain
 }
@@ -72,11 +89,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+    function() {return inChallenge('z', 22) ? "There are "+format(player.p.eaters)+" Eaters slowing Point Gain by ÷"+format(player.p.eaters.add(1).root(3).times(player.p.eaters.add(10).log(10))) : undefined},
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('g', 24)
+	return getBuyableAmount('g', 13).gte(1)
 }
 
 

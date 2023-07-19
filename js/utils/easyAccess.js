@@ -166,14 +166,82 @@ Required;
     baseAmount: returns the amount of the resource the challenge is based on
     requirementArray: an array of requirements for the challenge, on for each completion
     baseName: name of the resource the challenge is based on
-    challengeDescriptionArray: an array of challenge descriptions, one for each completion
 */
 function autoChallengeFeatures(challenge) {
+    console.log(challenge)
     return {
         requirement() {return thisChallengeRequirement(challenge)},
         goalDescription() {return challengeGoalDescription(challenge.layer, challenge.id)},
         canComplete() {return challengeCanComplete(challenge.layer, challenge.id)},
+    } 
+}
+
+/*
+startRow* - number of starting row
+layer* - id of layer
+layerName* - name of layer 
+resettingLayer - id of layer used for resetting base layer, extra features disabled if absent
+resettingLayerName - name of layer used for resetting base layer, extra features disabled if absent
+respecReset - if respeccing upgrades should cause reset, default is true
+*/
+function clickables(data) {
+    let style = {
+        'min-height': '75px',
+        'width': '75px',
+        'font-size': '7px',
     }
+    let extra = {
+        [((data.startRow+1)*10)+1]: {
+            title() {return "<font size = -1>Reset "+data.layerName+" Upgrades (Causes "+data.resettingLayerName+" Reset)</font>"},
+            canClick: true,
+            onClick() {
+                player[data.layer].upgrades = []
+                if((respecReset in data) ? data.respecReset : true) {doReset(data.resettingLayer, true)}
+            },
+            unlocked() {return tmp[data.resettingLayer].layerShown},
+            style() {return style},
+        },
+    }
+    let object = {
+        [((data.startRow)*10)+1]: {
+            title() {return "Do "+data.layerName+" Reset"},
+            canClick: true,
+            onClick() {
+                doReset(data.layer, false)
+            },
+            unlocked() {return tmp[data.layer].layerShown},
+            style() {return style},
+        },
+        [((data.startRow)*10)+2]: {
+            title() {return "Force "+data.layerName+" Reset"},
+            canClick: true,
+            onClick() {
+                doReset(data.layer, true)
+            },
+            unlocked() {return tmp.p.layerShown},
+            style() {return style},
+        },
+        [((data.startRow)*10)+3]: {
+            title() {return "Buy "+data.layerName+" Upgrades"},
+            canClick: true,
+            onHold() {
+                autobuyUpgrades(data.layer)
+            },
+            unlocked() {return tmp[data.layer].layerShown},
+            style() {return style},
+        },
+        [((data.startRow)*10)+4]: {
+            title() {return "Redirect to The "+data.layerName+" Layer"},
+            canClick: true,
+            onClick() {
+                player.tab = data.layer
+            },
+            unlocked() {return tmp[data.layer].layerShown},
+            style() {return style},
+        },
+    }
+    if(data.resettingLayer) object = {...object, ...extra}
+    return object
 }
 
 function smartAchievementEffect(layer, id, def = new Decimal(1)) {

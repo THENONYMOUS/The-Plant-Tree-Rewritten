@@ -319,6 +319,7 @@ function autobuyUpgrades(layer){
 }
 
 function gameLoop(diff) {
+    diff = diff*player.stat.gameSpeed/100
 	if (isEndgame() || tmp.gameEnded){
 		tmp.gameEnded = true
 		clearParticles()

@@ -40,7 +40,11 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b))
 }
 
-function format(decimal, precision = 2, small) {
+function format(decimal, precision = 2, small = true) {
+    if(ctrlDown||player.stat.preciseNum) {
+        precision = (precision < 2 ? 2 : precision)
+        precision += 2
+    }
     small = small || modInfo.allowSmall
     decimal = new Decimal(decimal)
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
